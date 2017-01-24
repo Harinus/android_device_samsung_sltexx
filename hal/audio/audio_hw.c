@@ -1846,11 +1846,14 @@ static audio_channel_mask_t in_get_channels(const struct audio_stream *stream)
 static size_t in_get_buffer_size(const struct audio_stream *stream)
 {
     struct stream_in *in = (struct stream_in *)stream;
+    size_t size;
 
-    return get_input_buffer_size(in->requested_rate,
-                                 AUDIO_FORMAT_PCM_16_BIT,
-                                 audio_channel_count_from_in_mask(in_get_channels(stream)),
-                                 (in->flags & AUDIO_INPUT_FLAG_FAST) != 0);
+    size = in->config->period_size *
+        audio_stream_in_frame_size((const struct audio_stream_in *)stream);
+
+    ALOGT("%s: size=%zu\n", __func__, size);
+
+    return size;
 }
 
 static audio_format_t in_get_format(const struct audio_stream *stream __unused)
