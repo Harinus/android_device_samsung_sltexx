@@ -1570,11 +1570,13 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
                 do_out_standby(out);
             }
 
+#if 0
             /* force output standby to start or stop SCO pcm stream if needed */
             if ((val & AUDIO_DEVICE_OUT_ALL_SCO) ^
                 (out->device & AUDIO_DEVICE_OUT_ALL_SCO)) {
                 do_out_standby(out);
             }
+#endif
 
 #ifndef HDMI_INCAPABLE
             if (!out->standby && (out == adev->outputs[OUTPUT_HDMI] ||
@@ -1937,11 +1939,13 @@ static int in_set_parameters(struct audio_stream *stream, const char *kvpairs)
         val = atoi(value) & ~AUDIO_DEVICE_BIT_IN;
         /* no audio device uses val == 0 */
         if ((in->device != val) && (val != 0)) {
+#if 0
             /* force output standby to start or stop SCO pcm stream if needed */
             if ((val & AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET) ^
                     (in->device & AUDIO_DEVICE_IN_BLUETOOTH_SCO_HEADSET)) {
                 do_in_standby(in);
             }
+#endif
             in->device = val;
             apply_now = !in->standby;
         }
