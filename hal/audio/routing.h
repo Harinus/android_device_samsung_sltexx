@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2013 The CyanogenMod Project
+ * Copyright (C) 2017 The LineagOS Project
+ * Copyright (C) 2017 Andreas Schneider <asn@cryptomilk.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,321 +16,85 @@
  * limitations under the License.
  */
 
-#ifndef _ROUTING_H_
-#define _ROUTING_H_
+#ifndef _AUDIO_ROUTING_H_
+#define _AUDIO_ROUTING_H_
 
 enum {
-    OUT_DEVICE_SPEAKER,
-    OUT_DEVICE_EARPIECE,
-    OUT_DEVICE_HEADSET,
-    OUT_DEVICE_HEADPHONES,
-    OUT_DEVICE_BT_SCO,
-    OUT_DEVICE_BT_SCO_HEADSET_OUT,
-    OUT_DEVICE_BT_SCO_CARKIT,
-    OUT_DEVICE_SPEAKER_AND_HEADSET,
-    OUT_DEVICE_SPEAKER_AND_EARPIECE,
-    OUT_DEVICE_TAB_SIZE,           /* number of rows in route_configs[][] */
-    OUT_DEVICE_NONE,
-    OUT_DEVICE_CNT
+    SND_DEVICE_NONE = 0,
+
+    /* Playback devices */
+    SND_DEVICE_MIN,
+    SND_DEVICE_OUT_BEGIN = SND_DEVICE_MIN,
+    SND_DEVICE_OUT_EARPIECE = SND_DEVICE_OUT_BEGIN,
+    SND_DEVICE_OUT_SPEAKER,
+    SND_DEVICE_OUT_HEADPHONES,
+    SND_DEVICE_OUT_SPEAKER_AND_HEADPHONES,
+    SND_DEVICE_OUT_VOICE_EARPIECE,
+    SND_DEVICE_OUT_VOICE_EARPIECE_WB,
+    SND_DEVICE_OUT_VOICE_SPEAKER,
+    SND_DEVICE_OUT_VOICE_SPEAKER_WB,
+    SND_DEVICE_OUT_VOICE_HEADPHONES,
+    SND_DEVICE_OUT_VOICE_HEADPHONES_WB,
+    SND_DEVICE_OUT_HDMI,
+    SND_DEVICE_OUT_SPEAKER_AND_HDMI,
+    SND_DEVICE_OUT_BT_SCO,
+    SND_DEVICE_OUT_END,
+
+    /*
+     * Note: IN_BEGIN should be same as OUT_END because total number of devices
+     * SND_DEVICES_MAX should not exceed MAX_RX + MAX_TX devices.
+     */
+    /* Capture devices */
+    SND_DEVICE_IN_BEGIN = SND_DEVICE_OUT_END,
+    SND_DEVICE_IN_EARPIECE_MIC  = SND_DEVICE_IN_BEGIN,
+    SND_DEVICE_IN_SPEAKER_MIC,
+    SND_DEVICE_IN_HEADSET_MIC,
+    SND_DEVICE_IN_EARPIECE_MIC_AEC,
+    SND_DEVICE_IN_SPEAKER_MIC_AEC,
+    SND_DEVICE_IN_HEADSET_MIC_AEC,
+    SND_DEVICE_IN_VOICE_EARPIECE_MIC,
+    SND_DEVICE_IN_VOICE_SPEAKER_MIC,
+    SND_DEVICE_IN_VOICE_HEADSET_MIC,
+    SND_DEVICE_IN_HDMI_MIC,
+    SND_DEVICE_IN_BT_SCO_MIC,
+    SND_DEVICE_IN_CAMCORDER_MIC,
+    SND_DEVICE_IN_VOICE_REC_HEADSET_MIC,
+    SND_DEVICE_IN_VOICE_REC_MIC,
+    SND_DEVICE_IN_END,
+
+    SND_DEVICE_MAX = SND_DEVICE_IN_END,
 };
 
-enum {
-    IN_SOURCE_MIC,
-    IN_SOURCE_CAMCORDER,
-    IN_SOURCE_VOICE_RECOGNITION,
-    IN_SOURCE_VOICE_COMMUNICATION,
-    IN_SOURCE_VOICE_CALL,
-    IN_SOURCE_VOICE_CALL_WB,
-    IN_SOURCE_TAB_SIZE,            /* number of lines in route_configs[][] */
-    IN_SOURCE_NONE,
-    IN_SOURCE_CNT
+/* Array to store sound devices */
+static const char * const device_table[SND_DEVICE_MAX] = {
+    [SND_DEVICE_NONE] = "none",
+    /* Playback sound devices */
+    [SND_DEVICE_OUT_EARPIECE] = "earpiece",
+    [SND_DEVICE_OUT_SPEAKER] = "speaker",
+    [SND_DEVICE_OUT_HEADPHONES] = "headphones",
+    [SND_DEVICE_OUT_SPEAKER_AND_HEADPHONES] = "speaker-and-headphones",
+    [SND_DEVICE_OUT_VOICE_EARPIECE] = "voice-earpiece",
+    [SND_DEVICE_OUT_VOICE_EARPIECE] = "voice-earpiece-wb",
+    [SND_DEVICE_OUT_VOICE_SPEAKER] = "voice-speaker",
+    [SND_DEVICE_OUT_VOICE_SPEAKER] = "voice-speaker-wb",
+    [SND_DEVICE_OUT_VOICE_HEADPHONES] = "voice-headphones",
+    [SND_DEVICE_OUT_VOICE_HEADPHONES] = "voice-headphones-wb",
+    [SND_DEVICE_OUT_HDMI] = "hdmi",
+    [SND_DEVICE_OUT_SPEAKER_AND_HDMI] = "speaker-and-hdmi",
+    [SND_DEVICE_OUT_BT_SCO] = "bt-sco-headset",
+
+    /* Capture sound devices */
+    [SND_DEVICE_IN_EARPIECE_MIC] = "earpiece-mic",
+    [SND_DEVICE_IN_SPEAKER_MIC] = "speaker-mic",
+    [SND_DEVICE_IN_HEADSET_MIC] = "headset-mic",
+    [SND_DEVICE_IN_VOICE_EARPIECE_MIC] = "voice-earpiece-mic",
+    [SND_DEVICE_IN_VOICE_SPEAKER_MIC] = "voice-speaker-mic",
+    [SND_DEVICE_IN_VOICE_HEADSET_MIC] = "voice-headset-mic",
+    [SND_DEVICE_IN_HDMI_MIC] = "hdmi-mic",
+    [SND_DEVICE_IN_BT_SCO_MIC] = "bt-sco-mic",
+    [SND_DEVICE_IN_CAMCORDER_MIC] = "camcorder-mic",
+    [SND_DEVICE_IN_VOICE_REC_HEADSET_MIC] = "voice-rec-headset-mic",
+    [SND_DEVICE_IN_VOICE_REC_MIC] = "voice-rec-mic",
 };
 
-struct route_config {
-    const char * const output_route;
-    const char * const output_device;
-    const char * const input_route;
-    const char * const input_device;
-};
-
-const struct route_config voice_speaker = {
-    "voice-speaker",
-    "device-speaker",
-    "voice-speaker-two-mic",
-    "device-two-mic",
-};
-
-const struct route_config voice_speaker_wb = {
-    "voice-speaker-wb",
-    "device-speaker",
-    "voice-speaker-two-mic-wb",
-    "device-two-mic",
-};
-
-const struct route_config voice_earpiece = {
-    "voice-earpiece",
-    "device-earpiece",
-    "voice-earpiece-two-mic",
-    "device-two-mic",
-};
-
-const struct route_config voice_earpiece_wb = {
-    "voice-earpiece-wb",
-    "device-earpiece",
-    "voice-earpiece-two-mic-wb",
-    "device-two-mic",
-};
-
-const struct route_config voice_headphones = {
-    "voice-headphones",
-    "device-headphones",
-    "voice-headphones-two-mic",
-    "device-two-mic",
-};
-
-const struct route_config voice_headphones_wb = {
-    "voice-headphones-wb",
-    "device-headphones",
-    "voice-headphones-two-mic-wb",
-    "device-two-mic",
-};
-
-const struct route_config voice_headset = {
-    "voice-headphones",
-    "device-headphones",
-    "voice-headset-mic",
-    "device-headset-mic",
-};
-
-const struct route_config voice_headset_wb = {
-    "voice-headphones-wb",
-    "device-headphones",
-    "voice-headset-mic-wb",
-    "device-headset-mic",
-};
-
-const struct route_config voice_bt_sco = {
-    "voice-bt-sco",
-    "device-sco",
-    "voice-bt-sco-headset-mic",
-    "device-sco-headset-mic",
-};
-
-const struct route_config voice_bt_sco_wb = {
-    "voice-bt-sco-wb",
-    "device-sco",
-    "voice-bt-sco-headset-mic-wb",
-    "device-sco-headset-mic",
-};
-
-const struct route_config voice_bt_sco_headset_out = {
-    "voice-bt-sco-headset-out",
-    "device-sco-headset-out",
-    "voice-bt-sco-headset-mic",
-    "device-sco-headset-mic",
-};
-
-const struct route_config voice_bt_sco_headset_out_wb = {
-    "voice-bt-sco-headset-out-wb",
-    "device-sco-headset-out",
-    "voice-bt-sco-headset-mic-wb",
-    "device-sco-headset-mic",
-};
-
-const struct route_config media_speaker = {
-    "media-speaker",
-    "device-speaker",
-    "media-builtin-mic",
-    "device-builtin-mic",
-};
-
-const struct route_config media_earpiece = {
-    "media-earpiece",
-    "device-earpiece",
-    "media-builtin-mic",
-    "device-builtin-mic",
-};
-
-const struct route_config media_headphones = {
-    "media-headphones",
-    "device-headphones",
-    "media-builtin-mic",
-    "device-builtin-mic",
-};
-
-const struct route_config media_headset = {
-    "media-headphones",
-    "device-headphones",
-    "media-headset-mic",
-    "device-headset-mic",
-};
-
-const struct route_config media_bt_sco = {
-    "media-bt-sco",
-    "device-sco",
-    "media-bt-sco-headset-mic",
-    "device-sco-headset-mic",
-};
-
-const struct route_config media_bt_sco_headset_out = {
-    "media-bt-sco",
-    "device-sco-headset-out",
-    "media-bt-sco-headset-mic",
-    "device-sco-headset-mic",
-};
-
-const struct route_config camcorder_speaker = {
-    "media-speaker",
-    "device-speaker",
-    "media-second-mic",
-    "device-back-mic",
-};
-
-const struct route_config camcorder_headphones = {
-    "media-headphones",
-    "device-headphones",
-    "media-second-mic",
-    "device-back-mic",
-};
-
-const struct route_config voice_rec_speaker = {
-    "voice-rec-speaker",
-    "device-speaker",
-    "voice-rec-two-mic",
-    "device-builtin-mic",
-};
-
-const struct route_config voice_rec_headphones = {
-    "voice-rec-headphones",
-    "device-headphones",
-    "voice-rec-two-mic",
-    "device-builtin-mic",
-};
-
-const struct route_config voice_rec_headset = {
-    "voice-rec-headphones",
-    "device-headphones",
-    "voice-rec-headset-mic",
-    "device-headset-mic",
-};
-
-const struct route_config communication_speaker = {
-    "communication-speaker",
-    "device-speaker",
-    "communication-speaker-two-mic",
-    "device-two-mic",
-};
-
-const struct route_config communication_earpiece = {
-    "communication-earpiece",
-    "device-earpiece",
-    "communication-earpiece-two-mic",
-    "device-two-mic",
-};
-
-const struct route_config communication_headphones = {
-    "communication-headphones",
-    "device-headphones",
-    "communication-earpiece-two-mic",
-    "device-two-mic",
-};
-
-const struct route_config communication_headset = {
-    "communication-headphones",
-    "device-headphones",
-    "communication-headset-mic",
-    "device-headset-mic",
-};
-
-const struct route_config speaker_and_headphones = {
-    "speaker-and-headphones",
-    "device-speaker",
-    "scenario-two-mic-speaker-default",
-    "device-two-mic",
-};
-
-const struct route_config bt_sco_carkit = {
-    "bt-sco-carkit",
-    "device-sco-carkit",
-    "media-bt-sco-headset-mic",
-    "device-sco-headset-mic",
-};
-
-const struct route_config none = {
-    "none",
-    "none",
-    "none",
-    "none",
-};
-
-const struct route_config * const route_configs[IN_SOURCE_TAB_SIZE]
-                                               [OUT_DEVICE_TAB_SIZE] = {
-    {   /* IN_SOURCE_MIC */
-        &media_speaker,             /* OUT_DEVICE_SPEAKER */
-        &media_earpiece,            /* OUT_DEVICE_EARPIECE */
-        &media_headset,             /* OUT_DEVICE_HEADSET */
-        &media_headphones,          /* OUT_DEVICE_HEADPHONES */
-        &media_bt_sco,              /* OUT_DEVICE_BT_SCO */
-        &media_bt_sco_headset_out,  /* OUT_DEVICE_BT_SCO_HEADSET_OUT */
-        &bt_sco_carkit,             /* OUT_DEVICE_BT_SCO_CARKIT */
-        &speaker_and_headphones,    /* OUT_DEVICE_SPEAKER_AND_HEADSET */
-        &media_speaker              /* OUT_DEVICE_SPEAKER_AND_EARPIECE */
-    },
-    {   /* IN_SOURCE_CAMCORDER */
-        &camcorder_speaker,         /* OUT_DEVICE_SPEAKER */
-        &none,                      /* OUT_DEVICE_EARPIECE */
-        &camcorder_headphones,      /* OUT_DEVICE_HEADSET */
-        &camcorder_headphones,      /* OUT_DEVICE_HEADPHONES */
-        &media_bt_sco,              /* OUT_DEVICE_BT_SCO */
-        &media_bt_sco_headset_out,  /* OUT_DEVICE_BT_SCO_HEADSET_OUT */
-        &bt_sco_carkit,             /* OUT_DEVICE_BT_SCO_CARKIT */
-        &speaker_and_headphones,    /* OUT_DEVICE_SPEAKER_AND_HEADSET */
-        &camcorder_speaker          /* OUT_DEVICE_SPEAKER_AND_EARPIECE */
-    },
-    {   /* IN_SOURCE_VOICE_RECOGNITION */
-        &voice_rec_speaker,         /* OUT_DEVICE_SPEAKER */
-        &none,                      /* OUT_DEVICE_EARPIECE */
-        &voice_rec_headset,         /* OUT_DEVICE_HEADSET */
-        &voice_rec_headphones,      /* OUT_DEVICE_HEADPHONES */
-        &media_bt_sco,              /* OUT_DEVICE_BT_SCO */
-        &media_bt_sco_headset_out,  /* OUT_DEVICE_BT_SCO_HEADSET_OUT */
-        &bt_sco_carkit,             /* OUT_DEVICE_BT_SCO_CARKIT */
-        &speaker_and_headphones,    /* OUT_DEVICE_SPEAKER_AND_HEADSET */
-        &voice_rec_speaker          /* OUT_DEVICE_SPEAKER_AND_EARPIECE */
-    },
-    {   /* IN_SOURCE_VOICE_COMMUNICATION */
-        &communication_speaker,     /* OUT_DEVICE_SPEAKER */
-        &communication_earpiece,    /* OUT_DEVICE_EARPIECE */
-        &communication_headset,     /* OUT_DEVICE_HEADSET */
-        &communication_headphones,  /* OUT_DEVICE_HEADPHONES */
-        &media_bt_sco,              /* OUT_DEVICE_BT_SCO */
-        &media_bt_sco_headset_out,  /* OUT_DEVICE_BT_SCO_HEADSET_OUT */
-        &bt_sco_carkit,             /* OUT_DEVICE_BT_SCO_CARKIT */
-        &speaker_and_headphones,    /* OUT_DEVICE_SPEAKER_AND_HEADSET */
-        &communication_earpiece     /* OUT_DEVICE_SPEAKER_AND_EARPIECE */
-    },
-    {   /* IN_SOURCE_VOICE_CALL */
-        &voice_speaker,             /* OUT_DEVICE_SPEAKER */
-        &voice_earpiece,            /* OUT_DEVICE_EARPIECE */
-        &voice_headset,             /* OUT_DEVICE_HEADSET */
-        &voice_headphones,          /* OUT_DEVICE_HEADPHONES */
-        &voice_bt_sco,              /* OUT_DEVICE_BT_SCO */
-        &voice_bt_sco_headset_out,  /* OUT_DEVICE_BT_SCO_HEADSET_OUT */
-        &bt_sco_carkit,             /* OUT_DEVICE_BT_SCO_CARKIT */
-        &voice_headphones,          /* OUT_DEVICE_SPEAKER_AND_HEADSET */
-        &voice_earpiece             /* OUT_DEVICE_SPEAKER_AND_EARPIECE */
-    },
-    {   /* IN_SOURCE_VOICE_CALL_WB */
-        &voice_speaker_wb,          /* OUT_DEVICE_SPEAKER */
-        &voice_earpiece_wb,         /* OUT_DEVICE_EARPIECE */
-        &voice_headset_wb,          /* OUT_DEVICE_HEADSET */
-        &voice_headphones_wb,       /* OUT_DEVICE_HEADPHONES */
-        &voice_bt_sco_wb,           /* OUT_DEVICE_BT_SCO */
-        &voice_bt_sco_headset_out_wb, /* OUT_DEVICE_BT_SCO_HEADSET_OUT */
-        &bt_sco_carkit,             /* OUT_DEVICE_BT_SCO_CARKIT */
-        &voice_headphones_wb,       /* OUT_DEVICE_SPEAKER_AND_HEADSET */
-        &voice_earpiece_wb          /* OUT_DEVICE_SPEAKER_AND_EARPIECE */
-    },
-};
-
-#endif
+#endif /* _AUDIO_ROUTING_H */
