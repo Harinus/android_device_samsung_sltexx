@@ -471,6 +471,7 @@
         <ctl name="HPOUT1R Input 2" value="ASRC2R" />
         <ctl name="AIF2 Mode" value="Master" />
         <ctl name="HP Switch" value="1" />
+        <ctl name="SPK Switch" value="0" />
     </path>
 
     <path name="headphones-voicecall-nb">
@@ -549,6 +550,7 @@
         <ctl name="HPOUT1R Input 2" value="ASRC2R" />
         <ctl name="AIF2 Mode" value="Master" />
         <ctl name="HP Switch" value="1" />
+        <ctl name="SPK Switch" value="0" />
     </path>
 
     <path name="headset-voicecall-nb">
@@ -623,6 +625,7 @@
         <ctl name="AIF3TX2 Input 1" value="ISRC1DEC2" />
         <ctl name="AIF3TX1 Input 2" value="ASRC2L" />
         <ctl name="AIF3TX2 Input 2" value="ASRC2R" />
+        <ctl name="SPK Switch" value="0" />
     </path>
 
     <!-- ### Volume ### -->
